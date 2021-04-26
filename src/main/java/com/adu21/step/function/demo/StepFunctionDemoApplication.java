@@ -1,6 +1,6 @@
 package com.adu21.step.function.demo;
 
-import com.adu21.step.function.demo.module.ApplicationModule;
+import com.adu21.step.function.demo.module.AWSStepFunctionModule;
 import com.adu21.step.function.demo.module.PostConstructModule;
 import com.adu21.step.function.demo.thread.StepFunctionExecutor;
 import com.google.inject.Guice;
@@ -19,7 +19,7 @@ public class StepFunctionDemoApplication {
     private final StepFunctionExecutor stepFunctionExecutor;
 
     public static void main(String[] args) {
-        Injector injector = Guice.createInjector(new ApplicationModule(), new PostConstructModule());
+        Injector injector = Guice.createInjector(new AWSStepFunctionModule(), new PostConstructModule());
         injector.getInstance(StepFunctionDemoApplication.class);
     }
 }
