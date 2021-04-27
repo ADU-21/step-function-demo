@@ -9,7 +9,6 @@ import javax.annotation.PostConstruct;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -18,16 +17,22 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 @Singleton
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class StepFunctionExecutor {
+public class StepFunctionObserver {
     private final Set<StepFunctionActivityRunnable> stepFunctionActivities;
+    private ScheduledExecutorService stepFunctionObservedThreadPool;
+
+    @Inject
+    public StepFunctionObserver(
+        Set<StepFunctionActivityRunnable> stepFunctionActivities) {
+        this.stepFunctionActivities = stepFunctionActivities;
+        this.stepFunctionObservedThreadPool = Executors.newScheduledThreadPool(stepFunctionActivities.size());
+    }
 
     @PostConstruct
     public void scheduleStepFunctionActivities() {
         log.info("Start aws step function activity observe thread pool.");
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(stepFunctionActivities.size());
         stepFunctionActivities.forEach(stepFunctionActivity ->
-            executorService.scheduleAtFixedRate(stepFunctionActivity, 0, 1, TimeUnit.SECONDS)
+            stepFunctionObservedThreadPool.scheduleAtFixedRate(stepFunctionActivity, 0, 1, TimeUnit.SECONDS)
         );
     }
 

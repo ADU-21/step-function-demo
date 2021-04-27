@@ -8,8 +8,8 @@
       "Next": "Successed"
     },
     "Successed": {
-      "Type": "Pass",
-      "Result": "Deployment successed!",
+      "Type": "Task",
+      "Resource": "arn:aws:states:us-east-1:393344114027:activity:DeploymentSucceeded",
       "End": true
     }
   }
