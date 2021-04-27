@@ -23,6 +23,7 @@ public abstract class AbstractStepFunctionActivity<INPUT, OUTPUT> {
     private final Gson gson;
     private final Class<INPUT> inputClass;
 
+    @SuppressWarnings("unchecked")
     public AbstractStepFunctionActivity(String arn, AWSStepFunctionHandler awsStepFunctionHandler, Gson gson) {
         this.AWSStepFunctionActivityARN = arn;
         this.awsStepFunctionHandler = awsStepFunctionHandler;

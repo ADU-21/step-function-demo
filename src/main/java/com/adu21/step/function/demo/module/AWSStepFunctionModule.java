@@ -1,6 +1,8 @@
 package com.adu21.step.function.demo.module;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,14 +20,25 @@ import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Names;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author LukeDu
  * @date 2021/4/24
  */
+@Log4j2
 public class AWSStepFunctionModule extends AbstractModule {
     @Override
     protected void configure() {
+        Properties properties = new Properties();
+        try {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("app.properties"));
+        } catch (IOException e) {
+            log.error("Could not load config: ", e);
+            System.exit(1);
+        }
+        Names.bindProperties(binder(), properties);
     }
 
     @Singleton
@@ -34,30 +47,14 @@ public class AWSStepFunctionModule extends AbstractModule {
         List<AbstractStepFunctionActivity> stepFunctionActivities,
         AWSStepFunctionHandler awsStepFunctionHandler) {
         return stepFunctionActivities.stream()
-            .map(stepFunctionActivity -> {
-                return new StepFunctionActivityRunnable<>(stepFunctionActivity, awsStepFunctionHandler);
-            }).collect(Collectors.toSet());
+            .map(stepFunctionActivity -> new StepFunctionActivityRunnable<>(stepFunctionActivity,
+                awsStepFunctionHandler)).collect(Collectors.toSet());
     }
 
     @Provides
     public List<AbstractStepFunctionActivity> stepFunctionActivities(DeploymentActivity deploymentActivity,
         DeploymentSucceededActivity deploymentSucceededActivity) {
         return ImmutableList.of(deploymentActivity, deploymentSucceededActivity);
-    }
-
-    @Singleton
-    @Provides
-    public DeploymentActivity deploymentActivity(AWSStepFunctionHandler stepFunctionHandler, Gson gson) {
-        return new DeploymentActivity("arn:aws:states:us-east-1:393344114027:activity:Deployment", stepFunctionHandler,
-            gson);
-    }
-
-    @Singleton
-    @Provides
-    public DeploymentSucceededActivity deploymentSucceededActivity(AWSStepFunctionHandler stepFunctionHandler,
-        Gson gson) {
-        return new DeploymentSucceededActivity("arn:aws:states:us-east-1:393344114027:activity:DeploymentSucceeded",
-            stepFunctionHandler, gson);
     }
 
     @Singleton

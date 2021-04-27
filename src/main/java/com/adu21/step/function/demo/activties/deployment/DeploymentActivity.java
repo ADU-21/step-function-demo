@@ -4,6 +4,8 @@ import com.adu21.step.function.demo.handler.AWSStepFunctionHandler;
 import com.adu21.step.function.demo.model.DeploymentInput;
 import com.adu21.step.function.demo.model.DeploymentOutput;
 import com.google.gson.Gson;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -12,8 +14,8 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 public class DeploymentActivity extends AbstractDeploymentActivity<DeploymentInput, DeploymentOutput> {
-
-    public DeploymentActivity(String arn,
+    @Inject
+    public DeploymentActivity(@Named("aws.step.function.activity.deployment.arn") String arn,
         AWSStepFunctionHandler awsStepFunctionHandler, Gson gson) {
         super(arn, awsStepFunctionHandler, gson);
     }
