@@ -5,10 +5,10 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * @author LukeDu
- * @date 2021/4/25
+ * @date 2021/4/26
  */
 @Getter
 @SuperBuilder
-public class DeploymentOutput extends AbstractDeploymentActivityOutput {
-    private final String deploymentMessage;
+public class DeploymentSucceededOutput extends AbstractDeploymentActivityOutput {
+    private final String successMessage;
 }

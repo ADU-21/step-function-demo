@@ -4,10 +4,10 @@ import lombok.Getter;
 
 /**
  * @author LukeDu
- * @date 2021/4/25
+ * @date 2021/4/26
  */
 @Getter
-public class DeploymentInput extends AbstractDeploymentActivityInput {
+public class DeploymentSucceededInput extends AbstractDeploymentActivityInput {
     @Override
     public boolean isValid() {
         return isAbstractDeploymentActivityInputValid();

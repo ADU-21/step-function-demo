@@ -15,8 +15,8 @@ import lombok.extern.log4j.Log4j2;
 public abstract class AbstractDeploymentActivity<INPUT extends AbstractDeploymentActivityInput,
     OUTPUT extends AbstractDeploymentActivityOutput>
     extends AbstractStepFunctionActivity<INPUT, OUTPUT> {
-    public AbstractDeploymentActivity(AWSStepFunctionHandler awsStepFunctionHandler,
-        Gson gson) {
-        super(awsStepFunctionHandler, gson);
+    public AbstractDeploymentActivity(String arn,
+        AWSStepFunctionHandler awsStepFunctionHandler, Gson gson) {
+        super(arn, awsStepFunctionHandler, gson);
     }
 }

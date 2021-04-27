@@ -12,9 +12,10 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 public class DeploymentActivity extends AbstractDeploymentActivity<DeploymentInput, DeploymentOutput> {
-    public DeploymentActivity(AWSStepFunctionHandler awsStepFunctionHandler,
-        Gson gson) {
-        super(awsStepFunctionHandler, gson);
+
+    public DeploymentActivity(String arn,
+        AWSStepFunctionHandler awsStepFunctionHandler, Gson gson) {
+        super(arn, awsStepFunctionHandler, gson);
     }
 
     @Override
@@ -25,6 +26,9 @@ public class DeploymentActivity extends AbstractDeploymentActivity<DeploymentInp
     @Override
     protected DeploymentOutput executeTask(DeploymentInput request) {
         log.info("Deploying...");
-        return new DeploymentOutput();
+        return DeploymentOutput.builder()
+            .deploymentId(request.getDeploymentId())
+            .deploymentMessage("Deploying...")
+            .build();
     }
 }

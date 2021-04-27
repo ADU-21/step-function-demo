@@ -7,6 +7,7 @@ import com.adu21.step.function.demo.handler.AWSStepFunctionHandler;
 import com.amazonaws.services.stepfunctions.model.GetActivityTaskResult;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -16,11 +17,14 @@ import org.apache.commons.lang3.ObjectUtils;
  */
 @Log4j2
 public abstract class AbstractStepFunctionActivity<INPUT, OUTPUT> {
+    @Getter
+    private final String AWSStepFunctionActivityARN;
     private final AWSStepFunctionHandler awsStepFunctionHandler;
     private final Gson gson;
     private final Class<INPUT> inputClass;
 
-    public AbstractStepFunctionActivity(AWSStepFunctionHandler awsStepFunctionHandler, Gson gson) {
+    public AbstractStepFunctionActivity(String arn, AWSStepFunctionHandler awsStepFunctionHandler, Gson gson) {
+        this.AWSStepFunctionActivityARN = arn;
         this.awsStepFunctionHandler = awsStepFunctionHandler;
         this.gson = gson;
 

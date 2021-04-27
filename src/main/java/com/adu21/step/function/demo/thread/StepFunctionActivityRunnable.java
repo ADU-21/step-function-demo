@@ -14,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 public class StepFunctionActivityRunnable<T extends AbstractStepFunctionActivity<?, ?>> implements Runnable {
-    private static final String ARN = "arn:aws:states:us-east-1:393344114027:activity:Deployment";
     @NonNull
     private final T stepFunctionActivity;
     @NonNull
@@ -22,13 +21,15 @@ public class StepFunctionActivityRunnable<T extends AbstractStepFunctionActivity
 
     @Override
     public void run() {
-        log.info("running...");
-        GetActivityTaskResult activityTaskResult = awsStepFunctionHandler.getActivityTaskResult(ARN);
+        String awsStepFunctionActivityARN = stepFunctionActivity.getAWSStepFunctionActivityARN();
+        log.info("Check {}...", awsStepFunctionActivityARN);
+        GetActivityTaskResult activityTaskResult = awsStepFunctionHandler.getActivityTaskResult(
+            awsStepFunctionActivityARN);
         if (activityTaskResult != null && activityTaskResult.getTaskToken() != null) {
             stepFunctionActivity.execute(activityTaskResult);
         } else {
             log.error("No activity task found for activity {} and ARN {}", stepFunctionActivity.getClass().getName(),
-                ARN);
+                awsStepFunctionActivityARN);
         }
     }
 }
