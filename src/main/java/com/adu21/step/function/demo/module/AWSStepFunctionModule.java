@@ -3,6 +3,8 @@ package com.adu21.step.function.demo.module;
 import com.adu21.step.function.demo.activties.deployment.DeploymentActivity;
 import com.adu21.step.function.demo.handler.AWSStepFunctionHandler;
 import com.adu21.step.function.demo.thread.StepFunctionActivityRunnable;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.stepfunctions.AWSStepFunctions;
 import com.amazonaws.services.stepfunctions.AWSStepFunctionsClientBuilder;
 import com.google.gson.Gson;
@@ -21,8 +23,8 @@ public class AWSStepFunctionModule extends AbstractModule {
 
     @Singleton
     @Provides
-    public StepFunctionActivityRunnable stepFunctionActivity(DeploymentActivity deploymentActivity) {
-        return new StepFunctionActivityRunnable<>(deploymentActivity);
+    public StepFunctionActivityRunnable stepFunctionActivity(DeploymentActivity deploymentActivity, AWSStepFunctionHandler awsStepFunctionHandler) {
+        return new StepFunctionActivityRunnable<>(deploymentActivity, awsStepFunctionHandler);
     }
 
     @Singleton
@@ -33,8 +35,19 @@ public class AWSStepFunctionModule extends AbstractModule {
 
     @Singleton
     @Provides
-    public AWSStepFunctions awsStepFunctionClient() {
-        return AWSStepFunctionsClientBuilder.defaultClient();
+    public AWSStepFunctions awsStepFunctionClient(ProfileCredentialsProvider credentialsProvider) {
+        return AWSStepFunctionsClientBuilder.standard()
+            .withCredentials(credentialsProvider)
+            .withRegion(Regions.US_EAST_1)
+            .build();
+    }
+
+    @Singleton
+    @Provides
+    public ProfileCredentialsProvider credentialsProvider() {
+        ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
+        credentialsProvider.getCredentials();
+        return credentialsProvider;
     }
 
     @Singleton

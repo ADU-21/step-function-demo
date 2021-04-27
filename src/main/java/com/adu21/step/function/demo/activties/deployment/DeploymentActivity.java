@@ -19,7 +19,7 @@ public class DeploymentActivity extends AbstractDeploymentActivity<DeploymentInp
 
     @Override
     protected boolean validateInput(DeploymentInput request) {
-        return request != null;
+        return request.isValid();
     }
 
     @Override

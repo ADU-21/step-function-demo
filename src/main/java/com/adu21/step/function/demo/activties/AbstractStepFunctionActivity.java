@@ -4,9 +4,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import com.adu21.step.function.demo.handler.AWSStepFunctionHandler;
+import com.amazonaws.services.stepfunctions.model.GetActivityTaskResult;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * @author LukeDu
@@ -30,9 +32,41 @@ public abstract class AbstractStepFunctionActivity<INPUT, OUTPUT> {
 
     protected abstract OUTPUT executeTask(INPUT input);
 
-    public void execute() {
-        executeTask(null);
+    public void execute(GetActivityTaskResult activityTaskResult) {
+        String taskToken = activityTaskResult.getTaskToken();
+        try {
+            INPUT input = getInput(activityTaskResult);
+
+            if (!validateInput(input)) {
+                log.error(getDefaultInvalidInputMessage());
+                sendTaskFailure(taskToken, getDefaultInvalidInputMessage());
+                return;
+            }
+            OUTPUT output = executeTask(input);
+            sendTaskSuccess(taskToken, output);
+        } catch (Exception e) {
+            sendTaskError(taskToken, e);
+        }
     }
 
-    ;
+    private void sendTaskError(String taskToken, Exception e) {
+        String errorMessage = ObjectUtils.firstNonNull(e.getMessage(), getDefaultInvalidInputMessage());
+        awsStepFunctionHandler.sendTaskFailure(taskToken, null, errorMessage);
+    }
+
+    private void sendTaskSuccess(String taskToken, OUTPUT output) {
+        awsStepFunctionHandler.sendTaskSuccess(taskToken, gson.toJson(output));
+    }
+
+    private void sendTaskFailure(String taskToken, String causeMessage) {
+        awsStepFunctionHandler.sendTaskFailure(taskToken, causeMessage, null);
+    }
+
+    private String getDefaultInvalidInputMessage() {
+        return "Provided input was not valid";
+    }
+
+    private INPUT getInput(GetActivityTaskResult activityTaskResult) {
+        return gson.fromJson(activityTaskResult.getInput(), inputClass);
+    }
 }
