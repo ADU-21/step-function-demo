@@ -50,6 +50,7 @@ public abstract class AbstractStepFunctionActivity<INPUT, OUTPUT> {
             OUTPUT output = executeTask(input);
             sendTaskSuccess(taskToken, output);
         } catch (Exception e) {
+            log.error(e);
             sendTaskError(taskToken, e);
         }
     }

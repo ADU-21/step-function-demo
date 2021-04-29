@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.adu21.step.function.demo.activties.AbstractStepFunctionActivity;
 import com.adu21.step.function.demo.activties.deployment.DeploymentActivity;
+import com.adu21.step.function.demo.activties.deployment.DeploymentFailedActivity;
 import com.adu21.step.function.demo.activties.deployment.DeploymentSucceededActivity;
 import com.adu21.step.function.demo.handler.AWSStepFunctionHandler;
 import com.adu21.step.function.demo.thread.StepFunctionActivityRunnable;
@@ -46,15 +49,16 @@ public class AWSStepFunctionModule extends AbstractModule {
     public Set<StepFunctionActivityRunnable> stepFunctionActivities(
         List<AbstractStepFunctionActivity> stepFunctionActivities,
         AWSStepFunctionHandler awsStepFunctionHandler) {
+        ExecutorService stepFunctionActivityExecutor = Executors.newCachedThreadPool();
         return stepFunctionActivities.stream()
             .map(stepFunctionActivity -> new StepFunctionActivityRunnable<>(stepFunctionActivity,
-                awsStepFunctionHandler)).collect(Collectors.toSet());
+                awsStepFunctionHandler, stepFunctionActivityExecutor)).collect(Collectors.toSet());
     }
 
     @Provides
     public List<AbstractStepFunctionActivity> stepFunctionActivities(DeploymentActivity deploymentActivity,
-        DeploymentSucceededActivity deploymentSucceededActivity) {
-        return ImmutableList.of(deploymentActivity, deploymentSucceededActivity);
+        DeploymentSucceededActivity deploymentSucceededActivity, DeploymentFailedActivity deploymentFailedActivity) {
+        return ImmutableList.of(deploymentActivity, deploymentSucceededActivity, deploymentFailedActivity);
     }
 
     @Singleton

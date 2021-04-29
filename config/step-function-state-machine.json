@@ -5,11 +5,25 @@
     "Deployment": {
       "Type": "Task",
       "Resource": "arn:aws:states:us-east-1:393344114027:activity:Deployment",
-      "Next": "Successed"
+      "Next": "Successed",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Failed",
+          "ResultPath": "$.error"
+        }
+      ]
     },
     "Successed": {
       "Type": "Task",
       "Resource": "arn:aws:states:us-east-1:393344114027:activity:DeploymentSucceeded",
+      "End": true
+    },
+    "Failed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:us-east-1:393344114027:activity:DeploymentFailed",
       "End": true
     }
   }
