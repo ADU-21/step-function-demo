@@ -1,5 +1,7 @@
 package com.adu21.step.function.demo.handler;
 
+import java.util.UUID;
+
 import com.amazonaws.services.stepfunctions.AWSStepFunctions;
 import com.amazonaws.services.stepfunctions.model.GetActivityTaskRequest;
 import com.amazonaws.services.stepfunctions.model.GetActivityTaskResult;
@@ -7,6 +9,8 @@ import com.amazonaws.services.stepfunctions.model.SendTaskFailureRequest;
 import com.amazonaws.services.stepfunctions.model.SendTaskFailureResult;
 import com.amazonaws.services.stepfunctions.model.SendTaskSuccessRequest;
 import com.amazonaws.services.stepfunctions.model.SendTaskSuccessResult;
+import com.amazonaws.services.stepfunctions.model.StartExecutionRequest;
+import com.amazonaws.services.stepfunctions.model.StartExecutionResult;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.RequiredArgsConstructor;
@@ -66,5 +70,20 @@ public class AWSStepFunctionHandler {
             && HttpStatus.SC_OK != sendTaskSuccessResult.getSdkHttpMetadata().getHttpStatusCode()) {
             log.error("Failed to send task success for token: {}", taskToken);
         }
+    }
+
+    public void startExecution(String deploymentStateMachineARN, String input) {
+        StartExecutionRequest startExecutionRequest = new StartExecutionRequest()
+            .withStateMachineArn(deploymentStateMachineARN)
+            .withName(UUID.randomUUID().toString())
+            .withInput(input);
+        StartExecutionResult startExecutionResult = awsStepFunctionClient.startExecution(startExecutionRequest);
+
+        if (startExecutionResult != null && startExecutionResult.getSdkHttpMetadata() != null
+            && HttpStatus.SC_OK == startExecutionResult.getSdkHttpMetadata().getHttpStatusCode()) {
+            log.info("Deployment start!");
+            return;
+        }
+        log.error("Deployment start failed!");
     }
 }

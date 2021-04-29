@@ -30,7 +30,7 @@ public class StepFunctionActivityRunnable<T extends AbstractStepFunctionActivity
         GetActivityTaskResult activityTaskResult = awsStepFunctionHandler.getActivityTaskResult(
             awsStepFunctionActivityARN);
         if (activityTaskResult != null && activityTaskResult.getTaskToken() != null) {
-            log.info("Executing {}", awsStepFunctionActivityARN);
+            log.debug("Executing {}", awsStepFunctionActivityARN);
             stepFunctionActivityExecutor.submit(() -> {
                 try {
                     stepFunctionActivity.execute(activityTaskResult);

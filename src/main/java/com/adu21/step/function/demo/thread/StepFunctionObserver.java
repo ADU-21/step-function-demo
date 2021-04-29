@@ -30,7 +30,7 @@ public class StepFunctionObserver {
 
     @PostConstruct
     public void scheduleStepFunctionActivities() {
-        log.info("Start aws step function activity observe thread pool.");
+        log.info("Start aws step function activities observer.");
         stepFunctionActivities.forEach(stepFunctionActivity ->
             stepFunctionObservedThreadPool.scheduleAtFixedRate(stepFunctionActivity, 0, 1, TimeUnit.SECONDS)
         );
